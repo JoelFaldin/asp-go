@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type Response struct {
+type Result struct {
 	URL        string
 	StatusCode int
 	Headers    http.Header
@@ -13,7 +13,9 @@ type Response struct {
 	Body       string
 }
 
-func Fetch(url string) (*Response, error) {
+// Hace la request a la web.
+// Almacena lo encontrado en el struct Result
+func Fetch(url string) (*Result, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -25,7 +27,7 @@ func Fetch(url string) (*Response, error) {
 		return nil, err
 	}
 
-	r := &Response{
+	r := &Result{
 		URL:        res.Request.URL.Host,
 		StatusCode: res.StatusCode,
 		Headers:    res.Header,
