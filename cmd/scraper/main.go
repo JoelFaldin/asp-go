@@ -18,7 +18,7 @@ func main() {
 			return
 		}
 
-		d := detector.DetectUsingServerHeader(r)
-		fmt.Println(d)
+		det := detector.Detect(r)
+		fmt.Println(det)
 	}
 }

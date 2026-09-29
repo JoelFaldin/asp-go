@@ -12,7 +12,7 @@ type Detection struct {
 
 type rule func(*fetcher.Result) []Detection
 
-func DetectUsingServerHeader(res *fetcher.Result) []Detection {
+func detectUsingServerHeader(res *fetcher.Result) []Detection {
 	sv := res.Headers.Get("Server")
 
 	if len(sv) == 0 {
@@ -35,7 +35,7 @@ func DetectUsingServerHeader(res *fetcher.Result) []Detection {
 	return dt
 }
 
-func DetectByPoweredByHeader(res *fetcher.Result) []Detection {
+func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 	poweredBy := res.Headers.Get("X-Powered-By")
 
 	if len(poweredBy) == 0 {
@@ -59,6 +59,18 @@ func DetectByPoweredByHeader(res *fetcher.Result) []Detection {
 }
 
 var rules = []rule{
-	DetectUsingServerHeader,
-	DetectByPoweredByHeader,
+	detectUsingServerHeader,
+	detectByPoweredByHeader,
+}
+
+func Detect(res *fetcher.Result) []Detection {
+	found := []Detection{}
+
+	for _, r := range rules {
+		det := r(res)
+
+		found = append(found, det...)
+	}
+
+	return found
 }
