@@ -3,6 +3,7 @@ package main
 import (
 	"asp-go/internal/detector"
 	"asp-go/internal/fetcher"
+	"fmt"
 	"log"
 	"os"
 )
@@ -17,6 +18,7 @@ func main() {
 			return
 		}
 
-		detector.DetectUsingServerHeader(r)
+		d := detector.DetectUsingServerHeader(r)
+		fmt.Println(d)
 	}
 }

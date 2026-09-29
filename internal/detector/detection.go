@@ -2,30 +2,33 @@ package detector
 
 import (
 	"asp-go/internal/fetcher"
-	"fmt"
 	"strings"
 )
 
 type Detection struct {
-	Framework string
-	Cms       string
-	Backend   string
+	Category string
+	Name     string
 }
 
-func DetectUsingServerHeader(res *fetcher.Result) {
+func DetectUsingServerHeader(res *fetcher.Result) []Detection {
 	sv := res.Headers.Get("Server")
 
 	if len(sv) == 0 {
-		return
+		return nil
 	}
 
 	lower := strings.ToLower(sv)
 
+	dt := []Detection{}
 	if strings.Contains(lower, "nginx") {
-		fmt.Println("is using nginx")
-	} else if strings.Contains(lower, "apache") {
-		fmt.Println("is using apache")
-	} else if strings.Contains(lower, "cloudflare") {
-		fmt.Println("is using cloudflare")
+		dt = append(dt, Detection{Category: "web-server", Name: "nginx"})
 	}
+	if strings.Contains(lower, "apache") {
+		dt = append(dt, Detection{Category: "web-server", Name: "apache"})
+	}
+	if strings.Contains(lower, "cloudflare") {
+		dt = append(dt, Detection{Category: "cdn", Name: "cloudflare"})
+	}
+
+	return dt
 }
