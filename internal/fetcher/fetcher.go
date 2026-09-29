@@ -10,7 +10,7 @@ type Response struct {
 	StatusCode int
 	Headers    http.Header
 	Cookies    []string
-	Boydy      string
+	Body       string
 }
 
 func Fetch(url string) ([]byte, error) {
