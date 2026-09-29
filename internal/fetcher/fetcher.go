@@ -13,7 +13,7 @@ type Response struct {
 	Body       string
 }
 
-func Fetch(url string) ([]byte, error) {
+func Fetch(url string) (*Response, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -25,5 +25,12 @@ func Fetch(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	return body, nil
+	r := &Response{
+		URL:        res.Request.URL.Host,
+		StatusCode: res.StatusCode,
+		Headers:    res.Header,
+		Body:       string(body),
+	}
+
+	return r, nil
 }
