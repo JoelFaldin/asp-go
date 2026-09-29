@@ -10,8 +10,10 @@ type Detection struct {
 	Name     string
 }
 
+// Tipo de firma específico para las funciones:
 type rule func(*fetcher.Result) []Detection
 
+// Revisa el Header "Server" para detectar CDNs y servidores web comunes:
 func detectUsingServerHeader(res *fetcher.Result) []Detection {
 	sv := res.Headers.Get("Server")
 
@@ -35,6 +37,7 @@ func detectUsingServerHeader(res *fetcher.Result) []Detection {
 	return dt
 }
 
+// Revisa el Header X-Powered-By para detectar servidores backends comunes:
 func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 	poweredBy := res.Headers.Get("X-Powered-By")
 
@@ -46,13 +49,13 @@ func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 
 	dt := []Detection{}
 	if strings.Contains(lower, "php") {
-		dt = append(dt, Detection{Category: "stack", Name: "php"})
+		dt = append(dt, Detection{Category: "backend", Name: "php"})
 	}
 	if strings.Contains(lower, "express") {
-		dt = append(dt, Detection{Category: "stack", Name: "express"})
+		dt = append(dt, Detection{Category: "backend", Name: "express"})
 	}
 	if strings.Contains(lower, "asp-net") {
-		dt = append(dt, Detection{Category: "stack", Name: "asp-net"})
+		dt = append(dt, Detection{Category: "backend", Name: "asp-net"})
 	}
 
 	return dt
@@ -63,6 +66,8 @@ var rules = []rule{
 	detectByPoweredByHeader,
 }
 
+// Función principal del archivo.
+// Dado un conjunto de Headers, ejecuta cada función de este archivo y devuelve el resultado.
 func Detect(res *fetcher.Result) []Detection {
 	found := []Detection{}
 
