@@ -10,6 +10,8 @@ type Detection struct {
 	Name     string
 }
 
+type rule func(*fetcher.Result) []Detection
+
 func DetectUsingServerHeader(res *fetcher.Result) []Detection {
 	sv := res.Headers.Get("Server")
 
@@ -28,6 +30,29 @@ func DetectUsingServerHeader(res *fetcher.Result) []Detection {
 	}
 	if strings.Contains(lower, "cloudflare") {
 		dt = append(dt, Detection{Category: "cdn", Name: "cloudflare"})
+	}
+
+	return dt
+}
+
+func detectByPoweredByHeader(res *fetcher.Result) []Detection {
+	poweredBy := res.Headers.Get("X-Powered-By")
+
+	if len(poweredBy) == 0 {
+		return nil
+	}
+
+	lower := strings.ToLower(poweredBy)
+
+	dt := []Detection{}
+	if strings.Contains(lower, "php") {
+		dt = append(dt, Detection{Category: "stack", Name: "php"})
+	}
+	if strings.Contains(lower, "express") {
+		dt = append(dt, Detection{Category: "stack", Name: "express"})
+	}
+	if strings.Contains(lower, "asp-net") {
+		dt = append(dt, Detection{Category: "stack", Name: "asp-net"})
 	}
 
 	return dt
