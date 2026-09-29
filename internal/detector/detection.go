@@ -35,7 +35,7 @@ func DetectUsingServerHeader(res *fetcher.Result) []Detection {
 	return dt
 }
 
-func detectByPoweredByHeader(res *fetcher.Result) []Detection {
+func DetectByPoweredByHeader(res *fetcher.Result) []Detection {
 	poweredBy := res.Headers.Get("X-Powered-By")
 
 	if len(poweredBy) == 0 {
@@ -56,4 +56,9 @@ func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 	}
 
 	return dt
+}
+
+var rules = []rule{
+	DetectUsingServerHeader,
+	DetectByPoweredByHeader,
 }
