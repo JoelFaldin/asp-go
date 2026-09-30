@@ -2,6 +2,7 @@ package detector
 
 import (
 	"asp-go/internal/fetcher"
+	"regexp"
 	"strings"
 )
 
@@ -61,9 +62,26 @@ func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 	return dt
 }
 
+var rgx = regexp.MustCompile(`(?i)<meta\s+name=(?:"|')generator(?:"|')\s+(content=(?:"|')([^"']+)(?:"|'))\s*/>`)
+
+func detectMetaTag(res *fetcher.Result) []Detection {
+	body := res.Body
+
+	matches := rgx.FindStringSubmatch(body)
+
+	dt := []Detection{}
+	if matches == nil {
+		return dt
+	}
+
+	dt = append(dt, Detection{Category: "cms", Name: matches[2]})
+	return dt
+}
+
 var rules = []rule{
 	detectUsingServerHeader,
 	detectByPoweredByHeader,
+	detectMetaTag,
 }
 
 // Función principal del archivo.
