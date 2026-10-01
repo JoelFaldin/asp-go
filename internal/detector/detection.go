@@ -58,12 +58,16 @@ func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 	if strings.Contains(lower, "asp-net") {
 		dt = append(dt, Detection{Category: "backend", Name: "asp-net"})
 	}
+	if strings.Contains(lower, "next.js") {
+		dt = append(dt, Detection{Category: "frontend", Name: "next.js"})
+	}
 
 	return dt
 }
 
 var rgx = regexp.MustCompile(`(?i)<meta\s+name=(?:"|')generator(?:"|')\s+(content=(?:"|')([^"']+)(?:"|'))\s*/>`)
 
+// Usa el regex para matchear la tag <meta>, muy común en sitios cms.
 func detectMetaTag(res *fetcher.Result) []Detection {
 	body := res.Body
 
@@ -78,10 +82,42 @@ func detectMetaTag(res *fetcher.Result) []Detection {
 	return dt
 }
 
+var rgxBdyPttrn = regexp.MustCompile(``)
+
+type BodyPatterns struct {
+	PatternString string
+	PatternRegex  *regexp.Regexp
+	Category      string
+	Name          string
+}
+
+var patterns = []BodyPatterns{
+	{PatternString: "__NEXT_DATA__", Category: "framework", Name: "Next.js"},
+	{PatternString: "data-reactroot", Category: "ui library", Name: "React"},
+	{PatternString: "/_nuxt/", Category: "framework", Name: "Nuxt"},
+	{PatternString: "data-v", Category: "framework", Name: "Vue"},
+}
+
+// Detecta patrones comunes de frameworks/librerias de frontend
+func detectByBodyPatterns(res *fetcher.Result) []Detection {
+	dt := []Detection{}
+
+	for _, r := range patterns {
+		bodyContains := strings.Contains(r.PatternString, res.Body)
+
+		if bodyContains {
+			dt = append(dt, Detection{Category: r.Category, Name: r.Name})
+		}
+	}
+
+	return dt
+}
+
 var rules = []rule{
 	detectUsingServerHeader,
 	detectByPoweredByHeader,
 	detectMetaTag,
+	detectByBodyPatterns,
 }
 
 // Función principal del archivo.
