@@ -10,6 +10,7 @@ import (
 type testCase struct {
 	name           string
 	serverHeader   string
+	serverBody     string
 	wantCategory   string
 	wantName       string
 	wantDetections int
@@ -81,6 +82,34 @@ func TestDetectByPoweredByHeader(t *testing.T) {
 		}
 		if r[0].Name != tc.wantName {
 			t.Errorf("exptected %s name, got %s", tc.wantName, r[0].Category)
+		}
+	}
+}
+
+var htmlTag = "<meta name='generator' content='WordPress 6.5.2' />"
+var metaTagCases = []testCase{
+	{name: "cms detected", serverBody: htmlTag, wantCategory: "cms", wantName: "WordPress 6.5.2", wantDetections: 1},
+}
+
+func TestDetectByMetaTag(t *testing.T) {
+	for _, tc := range metaTagCases {
+		res := fetcher.Result{
+			Body: tc.serverBody,
+		}
+
+		r := detectMetaTag(&res)
+
+		if len(r) != tc.wantDetections {
+			t.Errorf("expected %d detections, got %d", tc.wantDetections, len(r))
+		}
+		if len(r) < 1 {
+			return
+		}
+		if r[0].Category != tc.wantCategory {
+			t.Errorf("expected %s category, got %s", tc.wantCategory, r[0].Category)
+		}
+		if r[0].Name != tc.wantName {
+			t.Errorf("expected %s name, got %s", tc.wantName, r[0].Name)
 		}
 	}
 }
