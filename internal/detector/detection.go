@@ -93,6 +93,7 @@ type BodyPatterns struct {
 
 var patterns = []BodyPatterns{
 	{PatternString: "__NEXT_DATA__", Category: "framework", Name: "Next.js"},
+	{PatternString: "/_next/static/", Category: "framework", Name: "Next.js"},
 	{PatternString: "data-reactroot", Category: "ui library", Name: "React"},
 	{PatternString: "/_nuxt/", Category: "framework", Name: "Nuxt"},
 	{PatternString: "data-v", Category: "framework", Name: "Vue"},
