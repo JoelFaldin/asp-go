@@ -15,7 +15,7 @@ type testCase struct {
 	wantDetections int
 }
 
-var cases = []testCase{
+var headerCases = []testCase{
 	{name: "cloudflare detected", serverHeader: "cloudflare", wantCategory: "cdn", wantName: "cloudflare", wantDetections: 1},
 	{name: "nginx detected", serverHeader: "nginx/1.18.0", wantCategory: "web-server", wantName: "nginx", wantDetections: 1},
 	{name: "no header doesnt break", serverHeader: "", wantDetections: 0},
@@ -24,7 +24,7 @@ var cases = []testCase{
 
 // Ejecuta la funcion detectUsingServerHeader por cada case del slice:
 func TestDetectByServerHeader(t *testing.T) {
-	for _, tc := range cases {
+	for _, tc := range headerCases {
 		t.Run(tc.name, func(t *testing.T) {
 			res := fetcher.Result{}
 
@@ -50,4 +50,35 @@ func TestDetectByServerHeader(t *testing.T) {
 		})
 	}
 
+}
+
+var poweredByCases = []testCase{
+	{name: "php detected", serverHeader: "php", wantCategory: "backend", wantName: "php", wantDetections: 1},
+	{name: "next.js detected", serverHeader: "next.js", wantCategory: "frontend", wantName: "next.js", wantDetections: 1},
+}
+
+func TestDetectByPoweredByHeader(t *testing.T) {
+	for _, tc := range poweredByCases {
+		res := fetcher.Result{}
+
+		headers := http.Header{}
+		headers.Set("X-Powered-By", tc.serverHeader)
+
+		res.Headers = headers
+
+		r := detectByPoweredByHeader(&res)
+
+		if len(r) != tc.wantDetections {
+			t.Errorf("expected %d detections, got %d", tc.wantDetections, len(r))
+		}
+		if len(r) < 1 {
+			return
+		}
+		if r[0].Category != tc.wantCategory {
+			t.Errorf("expected %s category, got %s", tc.wantCategory, r[0].Category)
+		}
+		if r[0].Name != tc.wantName {
+			t.Errorf("exptected %s name, got %s", tc.wantName, r[0].Category)
+		}
+	}
 }
