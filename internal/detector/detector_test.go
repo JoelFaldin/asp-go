@@ -89,6 +89,8 @@ func TestDetectByPoweredByHeader(t *testing.T) {
 var htmlTag = "<meta name='generator' content='WordPress 6.5.2' />"
 var metaTagCases = []testCase{
 	{name: "cms detected", serverBody: htmlTag, wantCategory: "cms", wantName: "WordPress 6.5.2", wantDetections: 1},
+	{name: "no body doesnt break", serverBody: "", wantDetections: 0},
+	{name: "unknown body doesnt match", serverBody: "localBody/1.2", wantDetections: 0},
 }
 
 func TestDetectByMetaTag(t *testing.T) {
@@ -98,6 +100,34 @@ func TestDetectByMetaTag(t *testing.T) {
 		}
 
 		r := detectMetaTag(&res)
+
+		if len(r) != tc.wantDetections {
+			t.Errorf("expected %d detections, got %d", tc.wantDetections, len(r))
+		}
+		if len(r) < 1 {
+			return
+		}
+		if r[0].Category != tc.wantCategory {
+			t.Errorf("expected %s category, got %s", tc.wantCategory, r[0].Category)
+		}
+		if r[0].Name != tc.wantName {
+			t.Errorf("expected %s name, got %s", tc.wantName, r[0].Name)
+		}
+	}
+}
+
+var bodyPatternCases = []testCase{
+	{name: "next.js detected", serverBody: "__NEXT_DATA__", wantCategory: "framework", wantName: "Next.js", wantDetections: 1},
+	{name: "vuejs detected", serverBody: "data-v", wantCategory: "framework", wantName: "Vue", wantDetections: 1},
+}
+
+func TestDetectByBodyPatterns(t *testing.T) {
+	for _, tc := range bodyPatternCases {
+		res := fetcher.Result{
+			Body: tc.serverBody,
+		}
+
+		r := detectByBodyPatterns(&res)
 
 		if len(r) != tc.wantDetections {
 			t.Errorf("expected %d detections, got %d", tc.wantDetections, len(r))
