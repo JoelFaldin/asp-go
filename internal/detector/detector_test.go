@@ -55,6 +55,8 @@ func TestDetectByServerHeader(t *testing.T) {
 var poweredByCases = []testCase{
 	{name: "php detected", serverHeader: "php", wantCategory: "backend", wantName: "php", wantDetections: 1},
 	{name: "next.js detected", serverHeader: "next.js", wantCategory: "frontend", wantName: "next.js", wantDetections: 1},
+	{name: "no header doesnt break", serverHeader: "", wantDetections: 0},
+	{name: "unknown header doenst match", serverHeader: "localServer/1.1", wantDetections: 0},
 }
 
 func TestDetectByPoweredByHeader(t *testing.T) {
