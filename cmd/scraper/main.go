@@ -1,30 +1,18 @@
 package main
 
 import (
+	"asp-go/internal/config"
 	"asp-go/internal/detector"
 	"asp-go/internal/fetcher"
-	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 )
 
-type Site struct {
-	URL string `json:"url"`
-}
-
 func main() {
-	data, err := os.ReadFile("./data/domains.json")
+	// Get file:
+	sites, err := config.GetFile()
 	if err != nil {
-		fmt.Println("error reading file", err)
-		return
-	}
-
-	var sites []Site
-
-	if err := json.Unmarshal(data, &sites); err != nil {
-		fmt.Println("error parsing json", err)
-		return
+		log.Fatalf("couldnt load file:", err)
 	}
 
 	for _, s := range sites {
