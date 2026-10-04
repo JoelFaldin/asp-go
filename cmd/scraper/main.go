@@ -18,8 +18,8 @@ func main() {
 	for _, s := range sites {
 		r, err := fetcher.Fetch(s.URL)
 		if err != nil {
-			log.Println(err)
-			return
+			log.Println("there was an error loading a site:", err)
+			continue
 		}
 
 		det := detector.Detect(r)
