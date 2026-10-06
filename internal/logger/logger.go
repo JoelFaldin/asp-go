@@ -24,7 +24,7 @@ func New(verbose bool) *Logger {
 	return &Logger{Verbose: verbose, stdLogger: log.New(os.Stdout, "", 0)}
 }
 
-func (l *Logger) Success(msg string, elapsed time.Duration) {
+func (l *Logger) SuccessTime(msg string, elapsed time.Duration) {
 	l.stdLogger.Printf("%s[SUCCESS]%s %s — %s%v%s\n", Green, Reset, msg, Yellow, elapsed, Reset)
 }
 
