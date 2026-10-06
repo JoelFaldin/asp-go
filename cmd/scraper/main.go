@@ -19,6 +19,7 @@ func main() {
 
 	startOp := time.Now()
 
+	// Ejecutar lógica principal:
 	crawler.Crawl(logHandler, sites)
 
 	totalTime := time.Since(startOp)
