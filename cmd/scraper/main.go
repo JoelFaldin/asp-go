@@ -19,6 +19,8 @@ func main() {
 		logHandler.Fatal(err)
 	}
 
+	startOp := time.Now()
+
 	for _, s := range sites {
 		startReq := time.Now()
 		r, err := fetcher.Fetch(s.URL)
@@ -31,6 +33,9 @@ func main() {
 
 		res := detector.Detect(r)
 		msg := fmt.Sprintf("%s", res)
-		logHandler.Info(msg, duration)
+		logHandler.Success(msg, duration)
 	}
+
+	totalTime := time.Since(startOp)
+	logHandler.Duration("Total operation time:", totalTime)
 }
