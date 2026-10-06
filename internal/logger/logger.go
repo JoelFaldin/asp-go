@@ -19,10 +19,19 @@ type Logger struct {
 	stdLogger *log.Logger
 }
 
+// Logger custom con colores y detalles:
 func New(verbose bool) *Logger {
 	return &Logger{Verbose: verbose, stdLogger: log.New(os.Stdout, "", 0)}
 }
 
 func (l *Logger) Info(msg string, elapsed time.Duration) {
 	l.stdLogger.Printf("%s[SUCCESS]%s %s — %s%v%s\n", Green, Reset, msg, Yellow, elapsed, Reset)
+}
+
+func (l *Logger) Error(err error) {
+	l.stdLogger.Printf("%s[ERROR]%s %v", Red, Reset, err)
+}
+
+func (l *Logger) Fatal(err error) {
+	l.stdLogger.Fatalf("%s[FATAL]%s %v", Red, Reset, err)
 }

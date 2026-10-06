@@ -6,19 +6,18 @@ import (
 	"asp-go/internal/fetcher"
 	"asp-go/internal/logger"
 	"fmt"
-	"log"
 	"time"
 )
 
 func main() {
-	// Get data file:
+	// Inicializar logger:
+	logHandler := logger.New(false)
+
+	// Cargar el archivo:
 	sites, err := config.GetFile()
 	if err != nil {
-		log.Fatalf("couldnt load file:", err)
+		logHandler.Fatal(err)
 	}
-
-	// Initialize logger:
-	logHandler := logger.New(false)
 
 	for _, s := range sites {
 		startReq := time.Now()
@@ -26,7 +25,7 @@ func main() {
 		duration := time.Since(startReq)
 
 		if err != nil {
-			log.Println("there was an error loading a site:", err)
+			logHandler.Error(err)
 			continue
 		}
 
