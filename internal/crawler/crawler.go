@@ -38,7 +38,10 @@ func Crawl(logHandler *logger.Logger, sites []config.Site) {
 	}
 
 	// Imprimir resumen:
-	fmt.Printf("success: %d, failures: %d\n", summary.successful, summary.failures)
+	msg1 := fmt.Sprintf("Successes: %d", summary.successful)
+	logHandler.Info(msg1)
+	msg2 := fmt.Sprintf("Failures: %d", summary.failures)
+	logHandler.Info(msg2)
 }
 
 func (s *Summary) IncrementSuccess() {

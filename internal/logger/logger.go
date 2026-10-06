@@ -11,7 +11,7 @@ const (
 	Green  = "\033[32m"
 	Yellow = "\033[33m"
 	Red    = "\033[31m"
-	BgBlue = "\033[44m"
+	BgBlue = "\033[34m"
 )
 
 type Logger struct {
@@ -30,6 +30,10 @@ func (l *Logger) SuccessTime(msg string, elapsed time.Duration) {
 
 func (l *Logger) Duration(msg string, totalElapsed time.Duration) {
 	l.stdLogger.Printf("%s[DURATION]%s %s %v", Yellow, Reset, msg, totalElapsed)
+}
+
+func (l *Logger) Info(msg string) {
+	l.stdLogger.Printf("%s[INFO]%s %s", BgBlue, Reset, msg)
 }
 
 func (l *Logger) Error(err error) {
