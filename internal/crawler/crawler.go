@@ -19,23 +19,33 @@ type Summary struct {
 func Crawl(logHandler *logger.Logger, sites []config.Site) {
 	summary := Summary{}
 
+	var wg sync.WaitGroup
+
 	for _, s := range sites {
-		startReq := time.Now()
-		r, err := fetcher.Fetch(s.URL)
-		duration := time.Since(startReq)
+		wg.Add(1)
 
-		if err != nil {
-			logHandler.Error(err)
-			summary.IncrementFailures()
-			continue
-		}
+		go func(site config.Site) {
+			defer wg.Done()
 
-		res := detector.Detect(r)
-		msg := fmt.Sprintf("%s", res)
-		logHandler.SuccessTime(msg, duration)
+			startReq := time.Now()
+			r, err := fetcher.Fetch(site.URL)
+			duration := time.Since(startReq)
 
-		summary.IncrementSuccess()
+			if err != nil {
+				logHandler.Error(err)
+				summary.IncrementFailures()
+				return
+			}
+
+			res := detector.Detect(r)
+			msg := fmt.Sprintf("%s", res)
+			logHandler.SuccessTime(msg, duration)
+
+			summary.IncrementSuccess()
+		}(s)
 	}
+
+	wg.Wait()
 
 	// Imprimir resumen:
 	msg1 := fmt.Sprintf("Successes: %d", summary.successful)
