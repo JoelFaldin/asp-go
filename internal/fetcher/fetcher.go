@@ -1,6 +1,7 @@
 package fetcher
 
 import (
+	"context"
 	"io"
 	"net/http"
 )
@@ -15,8 +16,14 @@ type Result struct {
 
 // Hace la request a la web.
 // Almacena lo encontrado en el struct Result
-func Fetch(url string) (*Result, error) {
-	res, err := http.Get(url)
+func Fetch(ctx context.Context, url string) (*Result, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{}
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

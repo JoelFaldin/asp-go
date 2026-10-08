@@ -5,6 +5,7 @@ import (
 	"asp-go/internal/detector"
 	"asp-go/internal/fetcher"
 	"asp-go/internal/logger"
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -55,7 +56,11 @@ func Crawl(logHandler *logger.Logger, sites []config.Site) {
 func worker(id int, jobs <-chan config.Site, summary *Summary, logHandler *logger.Logger) {
 	for site := range jobs {
 		startReq := time.Now()
-		r, err := fetcher.Fetch(site.URL)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		r, err := fetcher.Fetch(ctx, site.URL)
 		duration := time.Since(startReq)
 
 		if err != nil {
