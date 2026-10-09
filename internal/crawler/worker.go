@@ -11,14 +11,22 @@ import (
 )
 
 // Procesa un batch de numWorkers urls
-func worker(id int, jobs <-chan config.Site, summary *Summary, limiter *Limiter, logHandler *logger.Logger) {
+func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summary, limiter *Limiter, logHandler *logger.Logger) {
 	for site := range jobs {
 		startReq := time.Now()
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+		err := limiter.Wait(ctx, site.URL)
+		if err != nil {
+			logHandler.Error(err)
+			summary.IncrementFailures()
+			continue
+		}
 
-		r, err := fetcher.Fetch(ctx, site.URL)
+		ctxTimeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+		r, err := fetcher.Fetch(ctxTimeout, site.URL)
+		cancel()
+
 		duration := time.Since(startReq)
 
 		if err != nil {
