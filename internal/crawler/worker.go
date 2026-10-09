@@ -22,7 +22,7 @@ func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summa
 			continue
 		}
 
-		ctxTimeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctxTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
 
 		r, err := fetcher.Fetch(ctxTimeout, site.URL)
 		cancel()

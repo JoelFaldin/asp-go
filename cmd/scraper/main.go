@@ -5,6 +5,8 @@ import (
 	"asp-go/internal/crawler"
 	"asp-go/internal/logger"
 	"context"
+	"os"
+	"os/signal"
 	"time"
 )
 
@@ -20,7 +22,9 @@ func main() {
 
 	startOp := time.Now()
 
-	ctx := context.Background()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
 	// Ejecutar lógica principal:
 	crawler.Crawl(ctx, logHandler, sites)
 
