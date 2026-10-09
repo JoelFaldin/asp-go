@@ -20,8 +20,6 @@ func NewLimiters() *Limiter {
 }
 
 func (l *Limiter) Wait(ctx context.Context, rawURL string) error {
-	l.mu.Lock()
-
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
 		return err
