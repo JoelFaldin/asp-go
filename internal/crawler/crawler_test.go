@@ -38,3 +38,15 @@ func TestLimiterDifferentDomains(t *testing.T) {
 		t.Errorf("expected less than 500ms, got %v", elapsed)
 	}
 }
+
+func TestLimiterWithExpiration(t *testing.T) {
+	l := NewLimiters()
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	l.Wait(ctx, "https://www.a.cl/")
+	err := l.Wait(ctx, "https://www.a.cl/")
+	if err == nil {
+		t.Errorf("should have returned an error")
+	}
+}
