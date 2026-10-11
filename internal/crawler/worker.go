@@ -6,6 +6,7 @@ import (
 	"asp-go/internal/fetcher"
 	"asp-go/internal/logger"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -13,10 +14,18 @@ import (
 // Procesa un batch de numWorkers urls
 func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summary, limiter *Limiter, logHandler *logger.Logger) {
 	for site := range jobs {
+		if ctx.Err() != nil {
+			break
+		}
+
 		startReq := time.Now()
 
 		err := limiter.Wait(ctx, site.URL)
 		if err != nil {
+			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+				return
+			}
+
 			logHandler.Error(err)
 			summary.IncrementFailures()
 			continue
@@ -30,6 +39,10 @@ func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summa
 		duration := time.Since(startReq)
 
 		if err != nil {
+			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+				return
+			}
+
 			logHandler.Error(err)
 			summary.IncrementFailures()
 			continue
