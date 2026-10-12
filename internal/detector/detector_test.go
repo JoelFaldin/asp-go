@@ -45,8 +45,8 @@ func TestDetectByServerHeader(t *testing.T) {
 			if r[0].Category != tc.wantCategory {
 				t.Errorf("expected category %s, got %s", tc.wantCategory, r[0].Category)
 			}
-			if r[0].Name != tc.wantName {
-				t.Errorf("expected name %s, got %s", tc.wantName, r[0].Name)
+			if r[0].TechName != tc.wantName {
+				t.Errorf("expected name %s, got %s", tc.wantName, r[0].TechName)
 			}
 		})
 	}
@@ -80,7 +80,7 @@ func TestDetectByPoweredByHeader(t *testing.T) {
 		if r[0].Category != tc.wantCategory {
 			t.Errorf("expected %s category, got %s", tc.wantCategory, r[0].Category)
 		}
-		if r[0].Name != tc.wantName {
+		if r[0].TechName != tc.wantName {
 			t.Errorf("exptected %s name, got %s", tc.wantName, r[0].Category)
 		}
 	}
@@ -110,8 +110,8 @@ func TestDetectByMetaTag(t *testing.T) {
 		if r[0].Category != tc.wantCategory {
 			t.Errorf("expected %s category, got %s", tc.wantCategory, r[0].Category)
 		}
-		if r[0].Name != tc.wantName {
-			t.Errorf("expected %s name, got %s", tc.wantName, r[0].Name)
+		if r[0].TechName != tc.wantName {
+			t.Errorf("expected %s name, got %s", tc.wantName, r[0].TechName)
 		}
 	}
 }
@@ -138,8 +138,8 @@ func TestDetectByBodyPatterns(t *testing.T) {
 		if r[0].Category != tc.wantCategory {
 			t.Errorf("expected %s category, got %s", tc.wantCategory, r[0].Category)
 		}
-		if r[0].Name != tc.wantName {
-			t.Errorf("expected %s name, got %s", tc.wantName, r[0].Name)
+		if r[0].TechName != tc.wantName {
+			t.Errorf("expected %s name, got %s", tc.wantName, r[0].TechName)
 		}
 	}
 }

@@ -2,13 +2,14 @@ package detector
 
 import (
 	"asp-go/internal/fetcher"
+	"fmt"
 	"regexp"
 	"strings"
 )
 
 type Detection struct {
 	Category string
-	Name     string
+	TechName string
 }
 
 // Tipo de firma específico para las funciones:
@@ -26,13 +27,13 @@ func detectUsingServerHeader(res *fetcher.Result) []Detection {
 
 	dt := []Detection{}
 	if strings.Contains(lower, "nginx") {
-		dt = append(dt, Detection{Category: "web-server", Name: "nginx"})
+		dt = append(dt, Detection{Category: "web-server", TechName: "nginx"})
 	}
 	if strings.Contains(lower, "apache") {
-		dt = append(dt, Detection{Category: "web-server", Name: "apache"})
+		dt = append(dt, Detection{Category: "web-server", TechName: "apache"})
 	}
 	if strings.Contains(lower, "cloudflare") {
-		dt = append(dt, Detection{Category: "cdn", Name: "cloudflare"})
+		dt = append(dt, Detection{Category: "cdn", TechName: "cloudflare"})
 	}
 
 	return dt
@@ -50,16 +51,16 @@ func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 
 	dt := []Detection{}
 	if strings.Contains(lower, "php") {
-		dt = append(dt, Detection{Category: "backend", Name: "php"})
+		dt = append(dt, Detection{Category: "backend", TechName: "php"})
 	}
 	if strings.Contains(lower, "express") {
-		dt = append(dt, Detection{Category: "backend", Name: "express"})
+		dt = append(dt, Detection{Category: "backend", TechName: "express"})
 	}
 	if strings.Contains(lower, "asp-net") {
-		dt = append(dt, Detection{Category: "backend", Name: "asp-net"})
+		dt = append(dt, Detection{Category: "backend", TechName: "asp-net"})
 	}
 	if strings.Contains(lower, "next.js") {
-		dt = append(dt, Detection{Category: "frontend", Name: "next.js"})
+		dt = append(dt, Detection{Category: "frontend", TechName: "next.js"})
 	}
 
 	return dt
@@ -78,7 +79,7 @@ func detectMetaTag(res *fetcher.Result) []Detection {
 		return dt
 	}
 
-	dt = append(dt, Detection{Category: "cms", Name: matches[2]})
+	dt = append(dt, Detection{Category: "cms", TechName: matches[2]})
 	return dt
 }
 
@@ -107,11 +108,22 @@ func detectByBodyPatterns(res *fetcher.Result) []Detection {
 		bodyContains := strings.Contains(r.PatternString, res.Body)
 
 		if bodyContains {
-			dt = append(dt, Detection{Category: r.Category, Name: r.Name})
+			dt = append(dt, Detection{Category: r.Category, TechName: r.Name})
 		}
 	}
 
 	return dt
+}
+
+var titleRgx = regexp.MustCompile(`(?is)<title[^>]*>(.*?)</title>`)
+
+// Obtiene el title del sitio
+func detectSiteTitle(res *fetcher.Result) string {
+	body := res.Body
+
+	matches := titleRgx.FindStringSubmatch(body)
+
+	return matches[1]
 }
 
 var rules = []rule{
@@ -131,6 +143,9 @@ func Detect(res *fetcher.Result) []Detection {
 
 		found = append(found, det...)
 	}
+
+	title := detectSiteTitle(res)
+	fmt.Println("Site title: ", title)
 
 	return found
 }
