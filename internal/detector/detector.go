@@ -3,6 +3,7 @@ package detector
 import (
 	"asp-go/internal/fetcher"
 	"fmt"
+	"html"
 	"regexp"
 	"strings"
 )
@@ -122,8 +123,9 @@ func detectSiteTitle(res *fetcher.Result) string {
 	body := res.Body
 
 	matches := titleRgx.FindStringSubmatch(body)
+	unescapedTitle := html.UnescapeString(matches[1])
 
-	return matches[1]
+	return unescapedTitle
 }
 
 var rules = []rule{
