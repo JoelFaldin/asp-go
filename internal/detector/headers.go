@@ -16,14 +16,11 @@ func detectUsingServerHeader(res *fetcher.Result) []Detection {
 	lower := strings.ToLower(sv)
 
 	dt := []Detection{}
-	if strings.Contains(lower, "nginx") {
-		dt = append(dt, Detection{Category: "web-server", TechName: "nginx"})
-	}
-	if strings.Contains(lower, "apache") {
-		dt = append(dt, Detection{Category: "web-server", TechName: "apache"})
-	}
-	if strings.Contains(lower, "cloudflare") {
-		dt = append(dt, Detection{Category: "cdn", TechName: "cloudflare"})
+
+	for _, item := range hPatterns {
+		if strings.Contains(lower, item.HeaderContains) {
+			dt = append(dt, Detection{Category: item.Category, TechName: item.Name})
+		}
 	}
 
 	return dt

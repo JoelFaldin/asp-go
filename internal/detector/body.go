@@ -9,7 +9,7 @@ import (
 func detectByBodyPatterns(res *fetcher.Result) []Detection {
 	dt := []Detection{}
 
-	for _, r := range patterns {
+	for _, r := range bPatterns {
 		bodyContains := strings.Contains(r.PatternString, res.Body)
 
 		if bodyContains {
