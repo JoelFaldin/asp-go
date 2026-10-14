@@ -37,17 +37,11 @@ func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 	lower := strings.ToLower(poweredBy)
 
 	dt := []Detection{}
-	if strings.Contains(lower, "php") {
-		dt = append(dt, Detection{Category: "backend", TechName: "php"})
-	}
-	if strings.Contains(lower, "express") {
-		dt = append(dt, Detection{Category: "backend", TechName: "express"})
-	}
-	if strings.Contains(lower, "asp-net") {
-		dt = append(dt, Detection{Category: "backend", TechName: "asp-net"})
-	}
-	if strings.Contains(lower, "next.js") {
-		dt = append(dt, Detection{Category: "frontend", TechName: "next.js"})
+
+	for _, item := range hPoweredByPatterns {
+		if strings.Contains(lower, item.HeaderContains) {
+			dt = append(dt, Detection{Category: item.Category, TechName: item.Name})
+		}
 	}
 
 	return dt

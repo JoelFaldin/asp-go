@@ -21,6 +21,13 @@ var hPatterns = []HeaderPatterns{
 	{HeaderContains: "cloudflare", Category: "cdn", Name: "cloudflare"},
 }
 
+var hPoweredByPatterns = []HeaderPatterns{
+	{HeaderContains: "php", Category: "backend", Name: "php"},
+	{HeaderContains: "express", Category: "backend", Name: "express"},
+	{HeaderContains: "asp-net", Category: "backend", Name: "asp-net"},
+	{HeaderContains: "next.js", Category: "frontend", Name: "next.js"},
+}
+
 type BodyPatterns struct {
 	PatternString string
 	PatternRegex  *regexp.Regexp
