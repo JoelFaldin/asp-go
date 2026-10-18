@@ -13,7 +13,7 @@ func DetectSiteTitle(res *fetcher.Result) string {
 	body := res.Body
 
 	matches := titleRgx.FindStringSubmatch(body)
-	if len(matches) < 1 {
+	if len(matches) < 2 {
 		return ""
 	}
 
