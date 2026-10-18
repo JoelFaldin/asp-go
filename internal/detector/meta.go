@@ -2,6 +2,11 @@ package detector
 
 import "regexp"
 
+type PageInfo struct {
+	Title      string
+	Detections []Detection
+}
+
 type Detection struct {
 	Category string
 	TechName string

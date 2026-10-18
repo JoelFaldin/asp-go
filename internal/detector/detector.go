@@ -2,7 +2,6 @@ package detector
 
 import (
 	"asp-go/internal/fetcher"
-	"fmt"
 )
 
 // Tipo de firma específico para las funciones:
@@ -17,7 +16,7 @@ var rules = []rule{
 
 // Función principal del archivo.
 // Dado un conjunto de Headers, ejecuta cada función de este archivo y devuelve el resultado.
-func Detect(res *fetcher.Result) []Detection {
+func Detect(res *fetcher.Result) PageInfo {
 	found := []Detection{}
 
 	for _, r := range rules {
@@ -27,7 +26,7 @@ func Detect(res *fetcher.Result) []Detection {
 	}
 
 	title := DetectSiteTitle(res)
-	fmt.Println("Site title: ", title)
+	pageInfo := PageInfo{Title: title, Detections: found}
 
-	return found
+	return pageInfo
 }
