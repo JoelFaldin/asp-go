@@ -12,7 +12,8 @@ type Detection struct {
 	TechName string
 }
 
-var rgx = regexp.MustCompile(`(?i)<meta\s+name=(?:"|')generator(?:"|')\s+(content=(?:"|')([^"']+)(?:"|'))\s*/>`)
+var metaRgx = regexp.MustCompile(`(?is)<meta\b[^>]*>`)
+var metaGeneratorRgx = regexp.MustCompile(`(?is)name="generator" content="([^"]*)"`)
 
 type HeaderPatterns struct {
 	HeaderContains string

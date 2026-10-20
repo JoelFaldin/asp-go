@@ -21,16 +21,23 @@ func detectByBodyPatterns(res *fetcher.Result) []Detection {
 }
 
 // Usa el regex para matchear la tag <meta>, muy común en sitios cms.
+// Extrae el contenido del tag y lo devuelve en un slice.
 func detectMetaTag(res *fetcher.Result) []Detection {
 	body := res.Body
 
-	matches := rgx.FindStringSubmatch(body)
-
 	dt := []Detection{}
+	matches := metaRgx.FindAllStringSubmatch(body, -1)
 	if matches == nil {
 		return dt
 	}
 
-	dt = append(dt, Detection{Category: "cms", TechName: matches[2]})
+	for _, item := range matches {
+		m := metaGeneratorRgx.FindStringSubmatch(item[0])
+
+		if len(m) > 1 {
+			dt = append(dt, Detection{Category: "meta", TechName: m[1]})
+		}
+	}
+
 	return dt
 }
