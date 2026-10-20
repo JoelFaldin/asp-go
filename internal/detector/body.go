@@ -37,9 +37,10 @@ func detectMetaTag(res *fetcher.Result) []Detection {
 		if len(m) > 1 {
 			for _, r := range bTagPatterns {
 				bodyContains := strings.Contains(m[1], r.PatternString)
+				version := pluginVerRgx.FindString(m[1])
 
 				if bodyContains {
-					dt = append(dt, Detection{Category: r.Category, TechName: r.Name})
+					dt = append(dt, Detection{Category: r.Category, TechName: r.Name, Version: version})
 				}
 			}
 		}

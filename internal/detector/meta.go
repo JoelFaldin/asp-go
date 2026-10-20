@@ -42,6 +42,8 @@ type BodyPatterns struct {
 	Name          string
 }
 
+var pluginVerRgx = regexp.MustCompile(`\d+(?:\.\d+)+`)
+
 var bTagPatterns = []BodyPatterns{
 	{PatternString: "Elementor", Category: "plugin", Name: "Elementor"},
 	{PatternString: "Slider Revolution", Category: "plugin", Name: "Slider Revolution"},
