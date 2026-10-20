@@ -10,6 +10,7 @@ type PageInfo struct {
 type Detection struct {
 	Category string
 	TechName string
+	Version  string
 }
 
 var metaRgx = regexp.MustCompile(`(?is)<meta\b[^>]*>`)
@@ -39,6 +40,11 @@ type BodyPatterns struct {
 	PatternRegex  *regexp.Regexp
 	Category      string
 	Name          string
+}
+
+var bTagPatterns = []BodyPatterns{
+	{PatternString: "Elementor", Category: "plugin", Name: "Elementor"},
+	{PatternString: "Slider Revolution", Category: "plugin", Name: "Slider Revolution"},
 }
 
 var bPatterns = []BodyPatterns{

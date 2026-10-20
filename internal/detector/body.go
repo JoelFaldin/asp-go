@@ -35,7 +35,13 @@ func detectMetaTag(res *fetcher.Result) []Detection {
 		m := metaGeneratorRgx.FindStringSubmatch(item[0])
 
 		if len(m) > 1 {
-			dt = append(dt, Detection{Category: "meta", TechName: m[1]})
+			for _, r := range bTagPatterns {
+				bodyContains := strings.Contains(m[1], r.PatternString)
+
+				if bodyContains {
+					dt = append(dt, Detection{Category: r.Category, TechName: r.Name})
+				}
+			}
 		}
 	}
 
