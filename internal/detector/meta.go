@@ -54,5 +54,6 @@ var bPatterns = []BodyPatterns{
 	{PatternString: "/_next/static/", Category: "framework", Name: "Next.js"},
 	{PatternString: "data-reactroot", Category: "ui library", Name: "React"},
 	{PatternString: "/_nuxt/", Category: "framework", Name: "Nuxt"},
-	{PatternString: "data-v", Category: "framework", Name: "Vue"},
+	{PatternString: "__VUE__", Category: "framework", Name: "Vue"},
+	{PatternString: "/wp-content", Category: "cms", Name: "WordPress"},
 }

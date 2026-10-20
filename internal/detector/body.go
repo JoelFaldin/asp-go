@@ -10,7 +10,7 @@ func detectByBodyPatterns(res *fetcher.Result) []Detection {
 	dt := []Detection{}
 
 	for _, r := range bPatterns {
-		bodyContains := strings.Contains(r.PatternString, res.Body)
+		bodyContains := strings.Contains(res.Body, r.PatternString)
 
 		if bodyContains {
 			dt = append(dt, Detection{Category: r.Category, TechName: r.Name})
