@@ -26,7 +26,9 @@ func Detect(res *fetcher.Result) PageInfo {
 	}
 
 	title := DetectSiteTitle(res)
-	pageInfo := PageInfo{Title: title, Detections: found}
+	d := Dedupe(found)
+
+	pageInfo := PageInfo{Title: title, Detections: d}
 
 	return pageInfo
 }

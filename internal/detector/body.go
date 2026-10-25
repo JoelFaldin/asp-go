@@ -13,7 +13,7 @@ func detectByBodyPatterns(res *fetcher.Result) []Detection {
 		bodyContains := strings.Contains(res.Body, r.PatternString)
 
 		if bodyContains {
-			dt = append(dt, Detection{Category: r.Category, TechName: r.Name})
+			dt = append(dt, Detection{Category: r.Category, TechName: r.Name, Sources: []string{"body"}})
 		}
 	}
 
@@ -40,7 +40,7 @@ func detectMetaTag(res *fetcher.Result) []Detection {
 				version := pluginVerRgx.FindString(m[1])
 
 				if bodyContains {
-					dt = append(dt, Detection{Category: r.Category, TechName: r.Name, Version: version})
+					dt = append(dt, Detection{Category: r.Category, TechName: r.Name, Version: version, Sources: []string{"body"}})
 				}
 			}
 		}

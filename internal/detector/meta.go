@@ -11,6 +11,7 @@ type Detection struct {
 	Category string
 	TechName string
 	Version  string
+	Sources  []string
 }
 
 var metaRgx = regexp.MustCompile(`(?is)<meta\b[^>]*>`)

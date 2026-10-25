@@ -19,7 +19,7 @@ func detectUsingServerHeader(res *fetcher.Result) []Detection {
 
 	for _, item := range hPatterns {
 		if strings.Contains(lower, item.HeaderContains) {
-			dt = append(dt, Detection{Category: item.Category, TechName: item.Name})
+			dt = append(dt, Detection{Category: item.Category, TechName: item.Name, Sources: []string{"header"}})
 		}
 	}
 
@@ -40,7 +40,7 @@ func detectByPoweredByHeader(res *fetcher.Result) []Detection {
 
 	for _, item := range hPoweredByPatterns {
 		if strings.Contains(lower, item.HeaderContains) {
-			dt = append(dt, Detection{Category: item.Category, TechName: item.Name})
+			dt = append(dt, Detection{Category: item.Category, TechName: item.Name, Sources: []string{"header"}})
 		}
 	}
 
