@@ -32,7 +32,7 @@ var hPoweredByPatterns = []HeaderPatterns{
 	{HeaderContains: "php", Category: "backend", Name: "php"},
 	{HeaderContains: "express", Category: "backend", Name: "express"},
 	{HeaderContains: "asp-net", Category: "backend", Name: "asp-net"},
-	{HeaderContains: "next.js", Category: "frontend", Name: "next.js"},
+	{HeaderContains: "next.js", Category: "framework", Name: "Next.js"},
 }
 
 type BodyPatterns struct {
@@ -45,7 +45,7 @@ type BodyPatterns struct {
 var pluginVerRgx = regexp.MustCompile(`\d+(?:\.\d+)+`)
 
 var bTagPatterns = []BodyPatterns{
-	{PatternString: "Elementor", Category: "plugin", Name: "Elementor"},
+	{PatternString: "Elementor", Category: "page-builder", Name: "Elementor"},
 	{PatternString: "Slider Revolution", Category: "plugin", Name: "Slider Revolution"},
 }
 
