@@ -40,7 +40,7 @@ func detectMetaTag(res *fetcher.Result) []Detection {
 				version := pluginVerRgx.FindString(m[1])
 
 				if bodyContains {
-					dt = append(dt, Detection{Category: r.Category, TechName: r.Name, Version: version, Sources: []string{"body"}})
+					dt = append(dt, Detection{Category: r.Category, TechName: r.Name, Version: version, Sources: []string{"meta"}})
 				}
 			}
 		}

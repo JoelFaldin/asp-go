@@ -24,15 +24,15 @@ type HeaderPatterns struct {
 }
 
 var hPatterns = []HeaderPatterns{
-	{HeaderContains: "nginx", Category: "web-server", Name: "nginx"},
-	{HeaderContains: "apache", Category: "web-server", Name: "apache"},
-	{HeaderContains: "cloudflare", Category: "cdn", Name: "cloudflare"},
+	{HeaderContains: "nginx", Category: "web-server", Name: "Nginx"},
+	{HeaderContains: "apache", Category: "web-server", Name: "Apache"},
+	{HeaderContains: "cloudflare", Category: "cdn", Name: "Cloudflare"},
 }
 
 var hPoweredByPatterns = []HeaderPatterns{
-	{HeaderContains: "php", Category: "backend", Name: "php"},
-	{HeaderContains: "express", Category: "backend", Name: "express"},
-	{HeaderContains: "asp-net", Category: "backend", Name: "asp-net"},
+	{HeaderContains: "php", Category: "backend", Name: "Php"},
+	{HeaderContains: "express", Category: "backend", Name: "Express"},
+	{HeaderContains: "asp-net", Category: "backend", Name: "Asp-net"},
 	{HeaderContains: "next.js", Category: "framework", Name: "Next.js"},
 }
 
