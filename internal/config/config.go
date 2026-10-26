@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 )
 
@@ -22,4 +23,13 @@ func GetFile() ([]Site, error) {
 	}
 
 	return sites, nil
+}
+
+func GetDBURL() string {
+	url := os.Getenv("DATABASE_URL")
+	if len(url) == 0 {
+		log.Fatalf("Database url env variable not found")
+	}
+
+	return url
 }
