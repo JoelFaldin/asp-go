@@ -3,7 +3,6 @@ package main
 import (
 	"asp-go/internal/config"
 	"asp-go/internal/crawler"
-	"asp-go/internal/detector"
 	"asp-go/internal/logger"
 	"asp-go/internal/storage"
 	"context"
@@ -37,21 +36,6 @@ func main() {
 	store := storage.New(pool)
 	defer pool.Close()
 
-	// test SaveScan:
-	code := new(int)
-	*code = 200
-	title := new(string)
-	*title = "Google"
-	scan := storage.Scan{
-		StatusCode: code,
-		Title:      title,
-		Detections: []detector.Detection{},
-	}
-	err = store.SaveScan(ctx, "https://test.com", scan)
-	if err != nil {
-		logHandler.Fatal(err)
-	}
-
 	// Cargar el archivo:
 	sites, err := config.GetFile()
 	if err != nil {
@@ -61,7 +45,7 @@ func main() {
 	startOp := time.Now()
 
 	// Ejecutar lógica principal:
-	crawler.Crawl(ctx, logHandler, sites)
+	crawler.Crawl(ctx, logHandler, store, sites)
 
 	totalTime := time.Since(startOp)
 	logHandler.Duration("Total operation time:", totalTime)

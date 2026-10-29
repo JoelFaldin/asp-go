@@ -3,6 +3,7 @@ package crawler
 import (
 	"asp-go/internal/config"
 	"asp-go/internal/logger"
+	"asp-go/internal/storage"
 	"context"
 	"fmt"
 	"sync"
@@ -10,7 +11,7 @@ import (
 
 // Se encarga de la lógica principal (manda requests a los sitios y procesa la respuesta)
 // Utiliza goroutines y channels para limitar un número concreto de goroutines que se pueden lanzar a la vez
-func Crawl(ctx context.Context, logHandler *logger.Logger, sites []config.Site) {
+func Crawl(ctx context.Context, logHandler *logger.Logger, store *storage.Store, sites []config.Site) {
 	summary := NewSummary()
 	limiters := NewLimiters()
 
@@ -25,7 +26,7 @@ func Crawl(ctx context.Context, logHandler *logger.Logger, sites []config.Site) 
 
 		go func(id int) {
 			defer wg.Done()
-			worker(ctx, id, jobs, summary, limiters, logHandler)
+			worker(ctx, id, jobs, summary, limiters, logHandler, store)
 		}(i)
 	}
 

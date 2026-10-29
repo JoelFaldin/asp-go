@@ -5,6 +5,7 @@ import (
 	"asp-go/internal/detector"
 	"asp-go/internal/fetcher"
 	"asp-go/internal/logger"
+	"asp-go/internal/storage"
 	"context"
 	"errors"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 )
 
 // Procesa un batch de numWorkers urls
-func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summary, limiter *Limiter, logHandler *logger.Logger) {
+func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summary, limiter *Limiter, logHandler *logger.Logger, store *storage.Store) {
 	for site := range jobs {
 		if ctx.Err() != nil {
 			break
@@ -49,6 +50,20 @@ func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summa
 		}
 
 		res := detector.Detect(r)
+
+		// Guardar resultados en la base de datos:
+		scan := storage.Scan{
+			StatusCode: &r.StatusCode,
+			Title:      &res.Title,
+			Detections: res.Detections,
+		}
+		err = store.SaveScan(ctx, r.URL, scan)
+		if err != nil {
+			logHandler.Error(err)
+			return
+		}
+
+		// Imprime resultados en la consola:
 		msg := fmt.Sprintf("%d %s", id, res)
 		logHandler.SuccessTime(msg, duration)
 
