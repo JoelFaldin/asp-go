@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strings"
 	"time"
 )
 
@@ -55,15 +54,15 @@ func worker(ctx context.Context, id int, jobs <-chan config.Site, results chan<-
 
 		// Guardar resultados en la base de datos:
 		parsedURL, err := url.Parse(r.URL)
+		if err != nil {
+			logHandler.Error(err)
+			return
+		}
 		scan := storage.Scan{
 			StatusCode: &r.StatusCode,
 			Title:      &res.Title,
 			Detections: res.Detections,
-			HostName:   strings.ToLower(parsedURL.Hostname()),
-		}
-		if err != nil {
-			logHandler.Error(err)
-			return
+			HostName:   parsedURL.String(),
 		}
 
 		results <- scan
