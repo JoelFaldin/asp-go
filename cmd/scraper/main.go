@@ -37,12 +37,35 @@ func main() {
 	store := storage.New(pool)
 	defer pool.Close()
 
-	// test:
-	i, err := store.Save(ctx, "https://google.com/")
+	// test upsert:
+	i, err := store.UpsertSite(ctx, "https://google.com/")
 	if err != nil {
 		logHandler.Fatal(err)
 	}
-	fmt.Println(i)
+	// fmt.Println(i)
+
+	// test insert:
+	code := new(int)
+	*code = 200
+	title := new(string)
+	*title = "Google"
+	scan := storage.Scan{
+		SiteID:     i,
+		StatusCode: code,
+		Title:      title,
+	}
+	err = store.InsertScan(ctx, scan)
+	fmt.Println(err)
+
+	code2 := new(int)
+	*code2 = 200
+	scan2 := storage.Scan{
+		SiteID:     i,
+		StatusCode: code2,
+		Title:      nil,
+	}
+	err = store.InsertScan(ctx, scan2)
+	fmt.Println(err)
 
 	// Cargar el archivo:
 	sites, err := config.GetFile()
