@@ -18,6 +18,20 @@ func Crawl(ctx context.Context, logHandler *logger.Logger, store *storage.Store,
 	var wg sync.WaitGroup
 
 	jobs := make(chan config.Site, len(sites))
+	results := make(chan storage.Scan, 10)
+	done := make(chan struct{})
+
+	// Lanza goroutines que escriben a la base de datos:
+	go func() {
+		defer close(done)
+		for sc := range results {
+			err := store.SaveScan(ctx, sc.HostName, sc)
+			if err != nil {
+				logHandler.Error(err)
+				continue
+			}
+		}
+	}()
 
 	numWorkers := 5
 	// Lanzar los numWorkers goroutines y se quedan escuchando el channel jobs
@@ -26,7 +40,7 @@ func Crawl(ctx context.Context, logHandler *logger.Logger, store *storage.Store,
 
 		go func(id int) {
 			defer wg.Done()
-			worker(ctx, id, jobs, summary, limiters, logHandler, store)
+			worker(ctx, id, jobs, results, summary, limiters, logHandler, store)
 		}(i)
 	}
 
@@ -37,6 +51,8 @@ func Crawl(ctx context.Context, logHandler *logger.Logger, store *storage.Store,
 
 	close(jobs)
 	wg.Wait()
+	close(results)
+	<-done
 
 	// Imprimir resumen:
 	msg1 := fmt.Sprintf("Successes: %d", summary.successful)

@@ -9,11 +9,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
+	"strings"
 	"time"
 )
 
 // Procesa un batch de numWorkers urls
-func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summary, limiter *Limiter, logHandler *logger.Logger, store *storage.Store) {
+func worker(ctx context.Context, id int, jobs <-chan config.Site, results chan<- storage.Scan, summary *Summary, limiter *Limiter, logHandler *logger.Logger, store *storage.Store) {
 	for site := range jobs {
 		if ctx.Err() != nil {
 			break
@@ -52,16 +54,19 @@ func worker(ctx context.Context, id int, jobs <-chan config.Site, summary *Summa
 		res := detector.Detect(r)
 
 		// Guardar resultados en la base de datos:
+		parsedURL, err := url.Parse(r.URL)
 		scan := storage.Scan{
 			StatusCode: &r.StatusCode,
 			Title:      &res.Title,
 			Detections: res.Detections,
+			HostName:   strings.ToLower(parsedURL.Hostname()),
 		}
-		err = store.SaveScan(ctx, r.URL, scan)
 		if err != nil {
 			logHandler.Error(err)
 			return
 		}
+
+		results <- scan
 
 		// Imprime resultados en la consola:
 		msg := fmt.Sprintf("%d %s", id, res)

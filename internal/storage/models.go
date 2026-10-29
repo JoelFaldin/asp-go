@@ -7,4 +7,5 @@ type Scan struct {
 	StatusCode *int
 	Title      *string
 	Detections []detector.Detection
+	HostName   string
 }
