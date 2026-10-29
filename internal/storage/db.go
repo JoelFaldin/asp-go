@@ -15,8 +15,14 @@ func New(pool *pgxpool.Pool) *Store {
 	return &Store{pool: pool}
 }
 
-func (s *Store) UpsertSite(ctx context.Context, domain string) (int, error) {
-	query := `
+func (s *Store) SaveScan(ctx context.Context, domain string, sc Scan) error {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	upsertQuery := `
 		INSERT INTO sites (domain, last_scanned_at)
 		VALUES ($1, now())
 		ON CONFLICT (domain)
@@ -24,17 +30,14 @@ func (s *Store) UpsertSite(ctx context.Context, domain string) (int, error) {
 			last_scanned_at = now()
 		RETURNING id
 	`
+
 	var id int
-	err := s.pool.QueryRow(ctx, query, domain).Scan(&id)
+	err = tx.QueryRow(ctx, upsertQuery, domain).Scan(&id)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	return id, nil
-}
-
-func (s *Store) InsertScan(ctx context.Context, sc Scan) error {
-	query := `
+	insertQuery := `
 		INSERT INTO scans (site_id, status_code, title, detections)
 		VALUES ($1, $2, $3, $4)
 	`
@@ -49,10 +52,10 @@ func (s *Store) InsertScan(ctx context.Context, sc Scan) error {
 		dt = sc.Detections
 	}
 
-	_, err := s.pool.Exec(ctx, query, sc.SiteID, sc.StatusCode, sc.Title, dt)
+	_, err = tx.Exec(ctx, insertQuery, id, sc.StatusCode, sc.Title, dt)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return tx.Commit(ctx)
 }

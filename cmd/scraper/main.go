@@ -7,7 +7,6 @@ import (
 	"asp-go/internal/logger"
 	"asp-go/internal/storage"
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"time"
@@ -38,25 +37,20 @@ func main() {
 	store := storage.New(pool)
 	defer pool.Close()
 
-	// test upsert:
-	i, err := store.UpsertSite(ctx, "https://google.com/")
-	if err != nil {
-		logHandler.Fatal(err)
-	}
-
-	// test insert:
+	// test SaveScan:
 	code := new(int)
 	*code = 200
 	title := new(string)
 	*title = "Google"
 	scan := storage.Scan{
-		SiteID:     i,
 		StatusCode: code,
 		Title:      title,
 		Detections: []detector.Detection{},
 	}
-	err = store.InsertScan(ctx, scan)
-	fmt.Println(err)
+	err = store.SaveScan(ctx, "https://test.com", scan)
+	if err != nil {
+		logHandler.Fatal(err)
+	}
 
 	// Cargar el archivo:
 	sites, err := config.GetFile()
