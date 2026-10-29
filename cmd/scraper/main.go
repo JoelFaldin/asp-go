@@ -6,10 +6,12 @@ import (
 	"asp-go/internal/logger"
 	"asp-go/internal/storage"
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
 
@@ -28,11 +30,19 @@ func main() {
 
 	// Inicializar la db:
 	dbURL := config.GetDBURL()
-	pool, err := storage.New(ctx, dbURL)
+	pool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
 		logHandler.Fatal(err)
 	}
+	store := storage.New(pool)
 	defer pool.Close()
+
+	// test:
+	i, err := store.Save(ctx, "https://google.com/")
+	if err != nil {
+		logHandler.Fatal(err)
+	}
+	fmt.Println(i)
 
 	// Cargar el archivo:
 	sites, err := config.GetFile()
