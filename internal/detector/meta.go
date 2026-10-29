@@ -8,10 +8,10 @@ type PageInfo struct {
 }
 
 type Detection struct {
-	Category string
-	TechName string
-	Version  string
-	Sources  []string
+	Category string   `json:"category"`
+	TechName string   `json:"name"`
+	Version  string   `json:"version,omitempty"`
+	Sources  []string `json:"sources"`
 }
 
 var metaRgx = regexp.MustCompile(`(?is)<meta\b[^>]*>`)

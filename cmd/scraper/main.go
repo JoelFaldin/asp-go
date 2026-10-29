@@ -3,6 +3,7 @@ package main
 import (
 	"asp-go/internal/config"
 	"asp-go/internal/crawler"
+	"asp-go/internal/detector"
 	"asp-go/internal/logger"
 	"asp-go/internal/storage"
 	"context"
@@ -42,7 +43,6 @@ func main() {
 	if err != nil {
 		logHandler.Fatal(err)
 	}
-	// fmt.Println(i)
 
 	// test insert:
 	code := new(int)
@@ -53,18 +53,9 @@ func main() {
 		SiteID:     i,
 		StatusCode: code,
 		Title:      title,
+		Detections: []detector.Detection{},
 	}
 	err = store.InsertScan(ctx, scan)
-	fmt.Println(err)
-
-	code2 := new(int)
-	*code2 = 200
-	scan2 := storage.Scan{
-		SiteID:     i,
-		StatusCode: code2,
-		Title:      nil,
-	}
-	err = store.InsertScan(ctx, scan2)
 	fmt.Println(err)
 
 	// Cargar el archivo:

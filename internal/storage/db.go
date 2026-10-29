@@ -1,8 +1,8 @@
 package storage
 
 import (
+	"asp-go/internal/detector"
 	"context"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -35,15 +35,24 @@ func (s *Store) UpsertSite(ctx context.Context, domain string) (int, error) {
 
 func (s *Store) InsertScan(ctx context.Context, sc Scan) error {
 	query := `
-		INSERT INTO scans (site_id, status_code, title)
-		VALUES ($1, $2, $3)
+		INSERT INTO scans (site_id, status_code, title, detections)
+		VALUES ($1, $2, $3, $4)
 	`
-	res, err := s.pool.Exec(ctx, query, sc.SiteID, sc.StatusCode, sc.Title)
+
+	// Revisar el slice detections:
+	var dt []detector.Detection
+	if sc.Detections == nil {
+		dt = []detector.Detection{
+			{Category: "framework", TechName: "Next.js", Sources: []string{"Header", "Body"}},
+		}
+	} else {
+		dt = sc.Detections
+	}
+
+	_, err := s.pool.Exec(ctx, query, sc.SiteID, sc.StatusCode, sc.Title, dt)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(res)
 
 	return nil
 }
