@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 )
 
 // Se encarga de la lógica principal (manda requests a los sitios y procesa la respuesta)
@@ -25,7 +26,11 @@ func Crawl(ctx context.Context, logHandler *logger.Logger, store *storage.Store,
 	go func() {
 		defer close(done)
 		for sc := range results {
-			err := store.SaveScan(ctx, sc.HostName, sc)
+			saveCtx := context.WithoutCancel(ctx)
+			timeoutCtx, cancel := context.WithTimeout(saveCtx, 5*time.Second)
+
+			err := store.SaveScan(timeoutCtx, sc)
+			defer cancel()
 			if err != nil {
 				logHandler.Error(err)
 				continue

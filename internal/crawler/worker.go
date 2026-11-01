@@ -45,6 +45,21 @@ func worker(ctx context.Context, id int, jobs <-chan config.Site, results chan<-
 				return
 			}
 
+			// Guardar datos del fallo en la db:
+			parsedURL, error := url.Parse(site.URL)
+			if error != nil {
+				logHandler.Error(error)
+				return
+			}
+			scan := storage.Scan{
+				StatusCode: nil,
+				Title:      &parsedURL.Host,
+				Detections: nil,
+				HostName:   site.URL,
+			}
+
+			results <- scan
+
 			logHandler.Error(err)
 			summary.IncrementFailures()
 			continue

@@ -15,7 +15,7 @@ func New(pool *pgxpool.Pool) *Store {
 	return &Store{pool: pool}
 }
 
-func (s *Store) SaveScan(ctx context.Context, domain string, sc Scan) error {
+func (s *Store) SaveScan(ctx context.Context, sc Scan) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func (s *Store) SaveScan(ctx context.Context, domain string, sc Scan) error {
 	`
 
 	var id int
-	err = tx.QueryRow(ctx, upsertQuery, domain).Scan(&id)
+	err = tx.QueryRow(ctx, upsertQuery, sc.HostName).Scan(&id)
 	if err != nil {
 		return err
 	}
