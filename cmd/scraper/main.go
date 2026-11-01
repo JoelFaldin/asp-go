@@ -6,7 +6,6 @@ import (
 	"asp-go/internal/logger"
 	"asp-go/internal/storage"
 	"context"
-	"flag"
 	"os"
 	"os/signal"
 	"time"
@@ -16,16 +15,17 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	// Inicializar un contexto para las operaciones:
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	// Configurar flags:
-	dryRun := flag.Bool("dry-run", false, "prints results to the console and doesnt save data into the database")
-	workers := flag.Int("workers", 5, "amount of concurrent workers")
-	timeout := flag.Duration("timeout", 10*time.Second, "timeout per request")
-	sitesPath := flag.String("sites", "./data/domains.json", "route to domains file")
-	flag.Parse()
+	flags := config.ParseFlags()
 
 	// Inicializar logger:
 	logHandler := logger.New(false)
@@ -46,7 +46,7 @@ func main() {
 	defer pool.Close()
 
 	// Cargar el archivo:
-	sites, err := config.GetFile(*sitesPath)
+	sites, err := config.GetFile(*flags.SitesPath)
 	if err != nil {
 		logHandler.Fatal(err)
 	}
@@ -54,8 +54,10 @@ func main() {
 	startOp := time.Now()
 
 	// Ejecutar lógica principal:
-	crawler.Crawl(ctx, *dryRun, *workers, *timeout, logHandler, store, sites)
+	crawler.Crawl(ctx, *flags.DryRun, *flags.Workers, *flags.Timeout, logHandler, store, sites)
 
 	totalTime := time.Since(startOp)
 	logHandler.Duration("Total operation time:", totalTime)
+
+	return nil
 }
