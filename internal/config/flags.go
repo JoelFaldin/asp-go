@@ -6,11 +6,11 @@ import (
 )
 
 type Flags struct {
-	DryRun    *bool
-	Workers   *int
-	Timeout   *time.Duration
-	SitesPath *string
-	DB        *string
+	DryRun    bool
+	Workers   int
+	Timeout   time.Duration
+	SitesPath string
+	DB        string
 }
 
 func ParseFlags() Flags {
@@ -23,11 +23,11 @@ func ParseFlags() Flags {
 	flag.Parse()
 
 	flags := Flags{
-		DryRun:    dryRun,
-		Workers:   workers,
-		Timeout:   timeout,
-		SitesPath: sitesPath,
-		DB:        db,
+		DryRun:    *dryRun,
+		Workers:   *workers,
+		Timeout:   *timeout,
+		SitesPath: *sitesPath,
+		DB:        *db,
 	}
 
 	return flags
