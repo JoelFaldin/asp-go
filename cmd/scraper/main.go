@@ -6,6 +6,7 @@ import (
 	"asp-go/internal/logger"
 	"asp-go/internal/storage"
 	"context"
+	"flag"
 	"os"
 	"os/signal"
 	"time"
@@ -18,6 +19,10 @@ func main() {
 	// Inicializar un contexto para las operaciones:
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+
+	// Configurar flags:
+	dryRun := flag.Bool("dry-run", false, "prints results to the console and doesnt save data into the database")
+	flag.Parse()
 
 	// Inicializar logger:
 	logHandler := logger.New(false)
@@ -46,7 +51,7 @@ func main() {
 	startOp := time.Now()
 
 	// Ejecutar lógica principal:
-	crawler.Crawl(ctx, logHandler, store, sites)
+	crawler.Crawl(ctx, *dryRun, logHandler, store, sites)
 
 	totalTime := time.Since(startOp)
 	logHandler.Duration("Total operation time:", totalTime)
