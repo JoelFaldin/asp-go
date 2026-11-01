@@ -26,12 +26,17 @@ func GetFile(sitesPath string) ([]Site, error) {
 	return sites, nil
 }
 
-// Obtiene la URL de la database a la que se conectan:
-func GetDBURL() string {
-	url := os.Getenv("DATABASE_URL")
-	if len(url) == 0 {
-		log.Fatalf("Database url env variable not found")
-	}
+// Obtiene la URL de la database a la que se conectan.
+// Prioriza la dbURL que viene desde el flag. Si no está presente, lee la variable de entorno:
+func GetDBURL(dbURL string) string {
+	if len(dbURL) == 0 {
+		url := os.Getenv("DATABASE_URL")
+		if len(url) == 0 {
+			log.Fatalf("Database url env variable not found")
+		}
 
-	return url
+		return url
+	} else {
+		return dbURL
+	}
 }

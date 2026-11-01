@@ -6,6 +6,8 @@ import (
 	"asp-go/internal/logger"
 	"asp-go/internal/storage"
 	"context"
+	"errors"
+	"io/fs"
 	"os"
 	"os/signal"
 	"time"
@@ -15,32 +17,33 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
-		os.Exit(1)
-	}
-}
-
-func run() error {
-	// Inicializar un contexto para las operaciones:
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer stop()
-
+	// Parsear flags:
 	flags := config.ParseFlags()
 
 	// Inicializar logger:
 	logHandler := logger.New(false)
 
+	if err := run(flags, logHandler); err != nil {
+		logHandler.Fatal(err)
+	}
+}
+
+func run(flags config.Flags, logHandler *logger.Logger) error {
+	// Inicializar un contexto para las operaciones:
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
 	// Inicializar godotenv:
 	err := godotenv.Load()
-	if err != nil {
-		logHandler.Fatal(err)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
 	}
 
 	// Inicializar la db:
-	dbURL := config.GetDBURL()
+	dbURL := config.GetDBURL(*flags.DB)
 	pool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
-		logHandler.Fatal(err)
+		return err
 	}
 	store := storage.New(pool)
 	defer pool.Close()
@@ -48,7 +51,7 @@ func run() error {
 	// Cargar el archivo:
 	sites, err := config.GetFile(*flags.SitesPath)
 	if err != nil {
-		logHandler.Fatal(err)
+		return err
 	}
 
 	startOp := time.Now()
