@@ -11,8 +11,8 @@ type Site struct {
 }
 
 // Obtiene el archivo de datos de donde saca los dominios:
-func GetFile() ([]Site, error) {
-	data, err := os.ReadFile("./data/domains.json")
+func GetFile(sitesPath string) ([]Site, error) {
+	data, err := os.ReadFile(sitesPath)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ import (
 )
 
 // Procesa un batch de numWorkers urls:
-func worker(ctx context.Context, id int, jobs <-chan config.Site, results chan<- storage.Scan, summary *Summary, limiter *Limiter, logHandler *logger.Logger) {
+func worker(ctx context.Context, timeout time.Duration, id int, jobs <-chan config.Site, results chan<- storage.Scan, summary *Summary, limiter *Limiter, logHandler *logger.Logger) {
 	for site := range jobs {
 		if ctx.Err() != nil {
 			break
@@ -33,7 +33,7 @@ func worker(ctx context.Context, id int, jobs <-chan config.Site, results chan<-
 			continue
 		}
 
-		ctxTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
+		ctxTimeout, cancel := context.WithTimeout(ctx, timeout)
 
 		r, err := fetcher.Fetch(ctxTimeout, site.URL)
 		cancel()

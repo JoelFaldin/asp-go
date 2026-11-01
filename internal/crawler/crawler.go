@@ -12,7 +12,7 @@ import (
 
 // Se encarga de la lógica principal (manda requests a los sitios y procesa la respuesta)
 // Utiliza goroutines y channels para limitar un número concreto de goroutines que se pueden lanzar a la vez:
-func Crawl(ctx context.Context, saveToDB bool, logHandler *logger.Logger, store *storage.Store, sites []config.Site) {
+func Crawl(ctx context.Context, saveToDB bool, workers int, timeout time.Duration, logHandler *logger.Logger, store *storage.Store, sites []config.Site) {
 	summary := NewSummary()
 	limiters := NewLimiters()
 
@@ -40,14 +40,13 @@ func Crawl(ctx context.Context, saveToDB bool, logHandler *logger.Logger, store 
 		}
 	}()
 
-	numWorkers := 5
 	// Lanzar los numWorkers goroutines y se quedan escuchando el channel jobs
-	for i := range numWorkers {
+	for i := range workers {
 		wg.Add(1)
 
 		go func(id int) {
 			defer wg.Done()
-			worker(ctx, id, jobs, results, summary, limiters, logHandler)
+			worker(ctx, timeout, id, jobs, results, summary, limiters, logHandler)
 		}(i)
 	}
 

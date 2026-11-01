@@ -22,6 +22,9 @@ func main() {
 
 	// Configurar flags:
 	dryRun := flag.Bool("dry-run", false, "prints results to the console and doesnt save data into the database")
+	workers := flag.Int("workers", 5, "amount of concurrent workers")
+	timeout := flag.Duration("timeout", 10*time.Second, "timeout per request")
+	sitesPath := flag.String("sites", "./data/domains.json", "route to domains file")
 	flag.Parse()
 
 	// Inicializar logger:
@@ -43,7 +46,7 @@ func main() {
 	defer pool.Close()
 
 	// Cargar el archivo:
-	sites, err := config.GetFile()
+	sites, err := config.GetFile(*sitesPath)
 	if err != nil {
 		logHandler.Fatal(err)
 	}
@@ -51,7 +54,7 @@ func main() {
 	startOp := time.Now()
 
 	// Ejecutar lógica principal:
-	crawler.Crawl(ctx, *dryRun, logHandler, store, sites)
+	crawler.Crawl(ctx, *dryRun, *workers, *timeout, logHandler, store, sites)
 
 	totalTime := time.Since(startOp)
 	logHandler.Duration("Total operation time:", totalTime)
