@@ -11,10 +11,12 @@ type Store struct {
 	pool *pgxpool.Pool
 }
 
+// Inicializa la db con un pool custom:
 func New(pool *pgxpool.Pool) *Store {
 	return &Store{pool: pool}
 }
 
+// Inserta en las tablas `sites` y `scans`, todo dentro de un context que hace rollback si algo va mal:
 func (s *Store) SaveScan(ctx context.Context, sc Scan) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {

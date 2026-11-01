@@ -8,7 +8,7 @@ import (
 
 var titleRgx = regexp.MustCompile(`(?is)<title[^>]*>(.*?)</title>`)
 
-// Obtiene el title del sitio
+// Obtiene el title del sitio:
 func DetectSiteTitle(res *fetcher.Result) string {
 	body := res.Body
 

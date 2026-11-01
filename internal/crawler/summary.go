@@ -3,7 +3,7 @@ package crawler
 import "sync"
 
 // Gestiona el resumen de las operaciones.
-// Las funciones IncrementSummary e IncrementFailures controlan su contenido
+// Las funciones IncrementSummary e IncrementFailures controlan su contenido:
 type Summary struct {
 	successful int
 	failures   int

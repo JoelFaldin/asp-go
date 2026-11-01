@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// Procesa un batch de numWorkers urls
+// Procesa un batch de numWorkers urls:
 func worker(ctx context.Context, id int, jobs <-chan config.Site, results chan<- storage.Scan, summary *Summary, limiter *Limiter, logHandler *logger.Logger, store *storage.Store) {
 	for site := range jobs {
 		if ctx.Err() != nil {

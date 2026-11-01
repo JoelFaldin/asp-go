@@ -2,6 +2,8 @@ package detector
 
 import "regexp"
 
+// Archivo con distintos structs y variables utilizadas en diferentes partes del proyecto.
+
 type PageInfo struct {
 	Title      string
 	Detections []Detection

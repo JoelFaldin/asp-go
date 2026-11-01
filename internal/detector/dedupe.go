@@ -5,7 +5,7 @@ import (
 )
 
 // Normaliza el resultado de un []Detection.
-// El []Detection entrante puede tener resultados duplicados, esta función los normaliza.
+// (Corrige la duplicación de []Detection)
 func Dedupe(detect []Detection) []Detection {
 	var result []Detection
 	seen := make(map[string]int)

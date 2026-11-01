@@ -11,7 +11,7 @@ import (
 )
 
 // Se encarga de la lógica principal (manda requests a los sitios y procesa la respuesta)
-// Utiliza goroutines y channels para limitar un número concreto de goroutines que se pueden lanzar a la vez
+// Utiliza goroutines y channels para limitar un número concreto de goroutines que se pueden lanzar a la vez:
 func Crawl(ctx context.Context, logHandler *logger.Logger, store *storage.Store, sites []config.Site) {
 	summary := NewSummary()
 	limiters := NewLimiters()

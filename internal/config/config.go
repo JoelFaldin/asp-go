@@ -10,6 +10,7 @@ type Site struct {
 	URL string `json:"url"`
 }
 
+// Obtiene el archivo de datos de donde saca los dominios:
 func GetFile() ([]Site, error) {
 	data, err := os.ReadFile("./data/domains.json")
 	if err != nil {
@@ -25,6 +26,7 @@ func GetFile() ([]Site, error) {
 	return sites, nil
 }
 
+// Obtiene la URL de la database a la que se conectan:
 func GetDBURL() string {
 	url := os.Getenv("DATABASE_URL")
 	if len(url) == 0 {

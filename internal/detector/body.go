@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Detecta patrones comunes de frameworks/librerias de frontend
+// Detecta patrones comunes de frameworks/librerias:
 func detectByBodyPatterns(res *fetcher.Result) []Detection {
 	dt := []Detection{}
 

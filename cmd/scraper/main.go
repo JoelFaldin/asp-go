@@ -15,6 +15,7 @@ import (
 )
 
 func main() {
+	// Inicializar un contexto para las operaciones:
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
