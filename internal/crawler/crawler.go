@@ -10,9 +10,15 @@ import (
 	"time"
 )
 
+type Saver interface {
+	SaveScan(ctx context.Context, sc storage.Scan) error
+}
+
+var _ Saver = (*storage.Store)(nil)
+
 // Se encarga de la lógica principal (manda requests a los sitios y procesa la respuesta)
 // Utiliza goroutines y channels para limitar un número concreto de goroutines que se pueden lanzar a la vez:
-func Crawl(ctx context.Context, saveToDB bool, workers int, timeout time.Duration, logHandler *logger.Logger, store *storage.Store, sites []config.Site) {
+func Crawl(ctx context.Context, workers int, timeout time.Duration, logHandler *logger.Logger, store Saver, sites []config.Site) {
 	summary := NewSummary()
 	limiters := NewLimiters()
 
@@ -29,13 +35,11 @@ func Crawl(ctx context.Context, saveToDB bool, workers int, timeout time.Duratio
 			saveCtx := context.WithoutCancel(ctx)
 			timeoutCtx, cancel := context.WithTimeout(saveCtx, 5*time.Second)
 
-			if !saveToDB {
-				err := store.SaveScan(timeoutCtx, sc)
-				defer cancel()
-				if err != nil {
-					logHandler.Error(err)
-					continue
-				}
+			err := store.SaveScan(timeoutCtx, sc)
+			defer cancel()
+			if err != nil {
+				logHandler.Error(err)
+				continue
 			}
 		}
 	}()

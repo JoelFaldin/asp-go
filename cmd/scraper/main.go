@@ -17,6 +17,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type DiscardSaver struct{}
+
+func (DiscardSaver) SaveScan(ctx context.Context, sc storage.Scan) error {
+	return nil
+}
+
 func main() {
 	// Parsear flags:
 	flags := config.ParseFlags()
@@ -40,15 +46,25 @@ func run(flags config.Flags, logHandler *logger.Logger) error {
 		return fmt.Errorf("configuring env: %w", err)
 	}
 
-	// Inicializar la db:
-	dbURL := config.GetDBURL(flags.DB)
-	pool, err := pgxpool.New(ctx, dbURL)
-	error := pool.Ping(ctx)
-	if err != nil || error != nil {
-		return fmt.Errorf("connecting to db: %w", err)
+	// Inicializar la db (solo si dryRun no está habilitado):
+	var store crawler.Saver
+	if !flags.DryRun {
+		dbURL := config.GetDBURL(flags.DB)
+		pool, err := pgxpool.New(ctx, dbURL)
+		if err != nil {
+			return fmt.Errorf("creating db pool: %w", err)
+		}
+		defer pool.Close()
+
+		err = pool.Ping(ctx)
+		if err != nil {
+			return fmt.Errorf("connecting to db: %w", err)
+		}
+
+		store = storage.New(pool)
+	} else {
+		store = DiscardSaver{}
 	}
-	store := storage.New(pool)
-	defer pool.Close()
 
 	// Cargar el archivo:
 	sites, err := config.GetFile(flags.SitesPath)
@@ -59,7 +75,7 @@ func run(flags config.Flags, logHandler *logger.Logger) error {
 	startOp := time.Now()
 
 	// Ejecutar lógica principal:
-	crawler.Crawl(ctx, flags.DryRun, flags.Workers, flags.Timeout, logHandler, store, sites)
+	crawler.Crawl(ctx, flags.Workers, flags.Timeout, logHandler, store, sites)
 
 	totalTime := time.Since(startOp)
 	logHandler.Duration("Total operation time:", totalTime)
