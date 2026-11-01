@@ -86,6 +86,25 @@ go mod tidy
 go run ./cmd/scraper/
 ```
 
+## Usage
+
+The project supports multiple optional flags to control its behaviour. The following list describe and showcases the usage of each flag:
+
+* `--dry-run`: Prints the results to the console, and doesnt store data in the database. You can also run this app without the db running.
+Example: `go run .\cmd\scraper --dry-run`
+
+* `--workers`: The amount of concurrent workers in the application. The more the better, but avoid big numbers. Default is 5.
+Example: `go run .\cmd\scraper --workers=10`
+
+* `--timeout`: Limits the total time the whole operation can take. Default is 10s.
+Example: `go run .\cmd\scraper --timeout=1s`
+
+* `--sitesPath`: Loads the domain list file from an specific location. Default is `./data/domains.json`.
+Example: `go run .\cmd\scraper --sitesPath=./data.json`
+
+* `--db`: The connection string for the database. The program prioritizes this value over a value in `.env` file. That means you can pass this flag with a connection string while not having a .env file.
+Example: `go run .\cmd\scraper --db=postgres://user:password@localhost:PORT/db_name`
+
 ## License
 
 This project uses an *MIT* license. Read it [here](LICENSE)!
