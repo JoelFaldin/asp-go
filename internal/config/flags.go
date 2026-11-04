@@ -11,6 +11,7 @@ type Flags struct {
 	Timeout   time.Duration
 	SitesPath string
 	DB        string
+	Verbose   bool
 }
 
 func ParseFlags() Flags {
@@ -20,6 +21,7 @@ func ParseFlags() Flags {
 	timeout := flag.Duration("timeout", 10*time.Second, "timeout per request")
 	sitesPath := flag.String("sites", "./data/domains.json", "route to domains file")
 	db := flag.String("db", "", "connection string for the database")
+	verbose := flag.Bool("verbose", false, "prints to the console detailed information about each operation")
 	flag.Parse()
 
 	flags := Flags{
@@ -28,6 +30,7 @@ func ParseFlags() Flags {
 		Timeout:   *timeout,
 		SitesPath: *sitesPath,
 		DB:        *db,
+		Verbose:   *verbose,
 	}
 
 	return flags

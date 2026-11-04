@@ -28,7 +28,7 @@ func main() {
 	flags := config.ParseFlags()
 
 	// Inicializar logger:
-	logHandler := logger.New(false)
+	logHandler := logger.New(flags.Verbose)
 
 	if err := run(flags, logHandler); err != nil {
 		logHandler.Fatal(err)

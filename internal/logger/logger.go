@@ -25,15 +25,21 @@ func New(verbose bool) *Logger {
 }
 
 func (l *Logger) SuccessTime(msg string, elapsed time.Duration) {
-	l.stdLogger.Printf("%s[SUCCESS]%s %s — %s%v%s\n", Green, Reset, msg, Yellow, elapsed, Reset)
+	if l.Verbose {
+		l.stdLogger.Printf("%s[SUCCESS]%s %s — %s%v%s\n", Green, Reset, msg, Yellow, elapsed, Reset)
+	}
 }
 
 func (l *Logger) Duration(msg string, totalElapsed time.Duration) {
-	l.stdLogger.Printf("%s[DURATION]%s %s %v", Yellow, Reset, msg, totalElapsed)
+	if l.Verbose {
+		l.stdLogger.Printf("%s[DURATION]%s %s %v", Yellow, Reset, msg, totalElapsed)
+	}
 }
 
 func (l *Logger) Info(msg string) {
-	l.stdLogger.Printf("%s[INFO]%s %s", BgBlue, Reset, msg)
+	if l.Verbose {
+		l.stdLogger.Printf("%s[INFO]%s %s", BgBlue, Reset, msg)
+	}
 }
 
 func (l *Logger) Error(err error) {
