@@ -1,17 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func test(w http.ResponseWriter, req *http.Request) {
-	fmt.Println("hey there!")
+	w.Write([]byte("greetings from chi backend"))
 }
 
 func main() {
-	// Bindear funciones a rutas específicas:
-	http.HandleFunc("/", test)
+	r := chi.NewRouter()
+	r.Get("/", test)
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":3000", r)
 }
